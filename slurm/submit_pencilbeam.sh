@@ -38,6 +38,6 @@ for (( idx=$START_IDX; idx<$END_IDX; idx++ )); do
     # temporary pytensor compiledir
     tmpdir=`mktemp -d`
     echo "starting to analyze $idx"
-    PYTENSOR_FLAGS="base_compiledir=$tmpdir" python scripts/pencilbeam.py $DIR_NAME $idx
+    PYTENSOR_FLAGS="base_compiledir=$tmpdir" python scripts/run_pencilbeam.py $DIR_NAME $idx
     rm -rf $tmpdir
 done
