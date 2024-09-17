@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --chdir="/home/twenger/tigress_hi"
 #SBATCH --job-name="pencilbeam"
-#SBATCH --output="logs/pencilbeam_logs/%x.%j.%N.out"
-#SBATCH --error="logs/pencilbeam_logs/%x.%j.%N.err"
+#SBATCH --output="logs/HI_joint_spectra_logs/%x.%j.%N.out"
+#SBATCH --error="logs/HI_joint_spectra_logs/%x.%j.%N.err"
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=twenger2@wisc.edu
 #SBATCH --nodes=1
@@ -14,7 +14,7 @@
 
 # 81920 spectra = 1000 jobs of 82 spectra
 # limit to 175 tasks to limit resource usage
-DIR_NAME="pencilbeam"
+DIR_NAME="HI_joint_spectra"
 PER_JOB=82
 NUM_SPEC=81920
 START_IDX=$(( $SLURM_ARRAY_TASK_ID * $PER_JOB ))
