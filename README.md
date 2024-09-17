@@ -14,7 +14,7 @@ pip install https://github.com/tvwenger/astro-tigress/archive/installation.zip
 To run `caribou_hi` (i.e., SLURM scripts):
 
 ```bash
-conda create --name caribou_hi -c conda-forge pymc nutpie pip dill
+conda create --name caribou_hi -c conda-forge pytensor pymc nutpie pip dill
 conda activate caribou_hi
 pip install caribou_hi
 ```
