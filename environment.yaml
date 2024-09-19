@@ -1,11 +1,12 @@
 name: caribou_hi
 channels:
+  - conda-forge
   - defaults
 dependencies:
   - nutpie
   - pip
   - pymc
   - pytensor
+  - dill
   - pip:
     - caribou_hi
-prefix: /home/twenger2/miniconda3/envs/caribou_hi

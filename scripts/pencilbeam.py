@@ -1,6 +1,7 @@
 import os
 import sys
 import pickle
+import dill
 
 import numpy as np
 
@@ -11,8 +12,7 @@ import caribou_hi
 from bayes_spec import SpecData, Optimize
 from caribou_hi import EmissionAbsorptionModel
 
-
-def main(dirname, idx):
+def main(idx):
     print(f"Starting job on idx = {idx}")
     print(f"pymc version: {pm.__version__}")
     print(f"bayes_spec version: {bayes_spec.__version__}")
@@ -24,7 +24,7 @@ def main(dirname, idx):
     }
 
     # load data
-    with open(f"data/{dirname}/{idx:06d}.pkl", "rb") as f:
+    with open(f"{idx:06d}.pkl", "rb") as f:
         datum = pickle.load(f)
 
     # get data
@@ -34,11 +34,6 @@ def main(dirname, idx):
     absorption_velocity = datum["x_values"]
     absorption_spectrum = datum["data_list"]
     rms_absorption = datum["errors"]
-
-    # skip if there does not appear to be any signal
-    if not np.any(emission_spectrum > 3.0 * rms_emission) and not np.any(absorption_spectrum > 3.0 * rms_absorption):
-        result["exception"] = "no apparent signal"
-        return result
 
     # save
     emission = SpecData(
@@ -72,8 +67,8 @@ def main(dirname, idx):
             prior_log10_nHI=[1.0, 0.5],
             prior_log10_tkin=[2.0, 0.5],
             prior_log10_n_alpha=[-6.0, 0.5],
-            prior_log10_larson_linewidth=[0.2, 0.05],
-            prior_larson_power=[0.4, 0.05],
+            prior_log10_larson_linewidth=[0.2, 0.1],
+            prior_larson_power=[0.4, 0.1],
             prior_velocity=[0.0, 20.0],
             prior_rms_emission=0.1,
             prior_rms_absorption=0.01,
@@ -86,22 +81,29 @@ def main(dirname, idx):
             "learning_rate": 1e-2,
         }
         sample_kwargs = {
-            "chains": 4,
-            "cores": 4,
+            "chains": 8,
+            "cores": 8,
+            "tune": 2000,
+            "draws": 1000,
             "init_kwargs": fit_kwargs,
-            "nuts_kwargs": {"target_accept": 0.8},
+            "nuts_kwargs": {"target_accept": 0.9},
         }
         opt.optimize(bic_threshold=10.0, sample_kwargs=sample_kwargs, fit_kwargs=fit_kwargs, approx=False)
 
         # save BICs and results for each model
         results = {0: {"bic": opt.best_model.null_bic()}}
         for n_gauss, model in opt.models.items():
-            results[n_gauss] = {}
+            results[n_gauss] = {"model": model}
             if len(model.solutions) > 1:
                 results[n_gauss]["exception"] = "multiple solutions"
+                best_bic = np.inf
+                best_solution = None
+                for solution in model.solutions:
+                    if model.bic(solution=solution) < best_bic:
+                        best_solution = solution
+                results[n_gauss]["bic"] = model.bic(solution=best_solution)
             elif len(model.solutions) == 1:
                 results[n_gauss]["bic"] = model.bic(solution=0)
-                results[n_gauss]["summary"] = pm.summary(model.trace.solution_0)
             else:
                 results[n_gauss]["exception"] = "no solution"
         result["results"] = results
@@ -113,16 +115,12 @@ def main(dirname, idx):
 
 
 if __name__ == "__main__":
-    dirname = sys.argv[1]
-    idx = int(sys.argv[2])
-    output = main(dirname, idx)
+    idx = int(sys.argv[1])
+    output = main(idx)
     if output["exception"] != "":
         print(output["exception"])
 
     # save results
-    outdirname = f"results/{dirname}_results"
-    if not os.path.isdir(outdirname):
-        os.mkdir(outdirname)
-    fname = f"{outdirname}/{idx:06d}.pkl"
+    fname = f"{idx:06d}_pencilbeam.pkl"
     with open(fname, "wb") as f:
-        pickle.dump(output, f)
+        dill.dump(output, f)

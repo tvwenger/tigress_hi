@@ -1,0 +1,27 @@
+# HTC Submit File
+# pencilbeam analysis
+
+# Docker container
+container_image = docker://tvwenger/caribou_hi:v1
+universe = container
+
+# Executable
+executable = /home/twenger2/tigress_hi/scripts/pencilbeam.sh
+
+# Data handling
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+fmtidx=$(printf "%06d" $(Process))
+transfer_input_files = /home/twenger2/tigress_hi/scripts/pencilbeam.py, /home/twenger2/tigress_hi/data/HI_joint_spectra/$(fmtidx).pkl
+
+# Logging
+log = /home/twenger2/tigress_hi/logs/pencilbeam_$(Cluster)_$(Process).log
+error = /home/twenger2/tigress_hi/logs/pencilbeam_$(Cluster)_$(Process).err
+output = /home/twenger2/tigress_hi/logs/pencilbeam_$(Cluster)_$(Process).out
+
+# Resource request
+request_cpus = 8
+request_memory = 8GB
+request_disk = 8GB
+
+queue 1
