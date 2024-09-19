@@ -1,0 +1,11 @@
+name: caribou_hi
+channels:
+  - defaults
+dependencies:
+  - nutpie
+  - pip
+  - pymc
+  - pytensor
+  - pip:
+    - caribou_hi
+prefix: /home/twenger2/miniconda3/envs/caribou_hi
