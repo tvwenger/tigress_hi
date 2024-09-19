@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source activate
+conda activate caribou_hi
+
 # temporary pytensor compiledir
 tmpdir=`mktemp -d`
 echo "starting to analyze $idx"

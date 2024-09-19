@@ -24,7 +24,7 @@ def main(idx):
     }
 
     # load data
-    with open(f"{idx:06d}.pkl", "rb") as f:
+    with open(f"{idx}.pkl", "rb") as f:
         datum = pickle.load(f)
 
     # get data
@@ -121,6 +121,6 @@ if __name__ == "__main__":
         print(output["exception"])
 
     # save results
-    fname = f"{idx:06d}_pencilbeam.pkl"
+    fname = f"{idx}_pencilbeam.pkl"
     with open(fname, "wb") as f:
         dill.dump(output, f)

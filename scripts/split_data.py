@@ -20,5 +20,5 @@ for fname in fnames:
         for key in data.keys():
             datum[key] = data[key][idx]
 
-        with open(f"{dirname}/{idx:06d}.pkl", "wb") as f:
+        with open(f"{dirname}/{idx}.pkl", "wb") as f:
             pickle.dump(datum, f)
