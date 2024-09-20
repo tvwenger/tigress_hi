@@ -81,8 +81,8 @@ def main(idx):
             "learning_rate": 1e-2,
         }
         sample_kwargs = {
-            "chains": 6,
-            "cores": 6,
+            "chains": 8,
+            "cores": 8,
             "tune": 2000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
@@ -100,25 +100,40 @@ def main(idx):
         for n_gauss, model in opt.models.items():
             results[n_gauss] = {"model": model, "bic": np.inf, "solutions": {}}
             for solution in model.solutions:
+                # get BIC
+                bic = model.bic(solution=solution)
+                if bic < results[n_gauss]["bic"]:
+                    results[n_gauss]["bic"] = bic
+
+                # get summary
+                summary = pm.summary(model.trace[f"solution_{solution}"])
+
+                # check convergence
+                converged_chain = len(model.trace[f"solution_{solution}"].chain) > 1
+                converged_rhat = summary["r_hat"].max() < 1.05
+                converged = converged_chain and converged_rhat
+
+                # save posterior samples for un-normalized params (except baseline)
                 data_vars = list(model.trace[f"solution_{solution}"].data_vars)
                 data_vars = [
                     data_var
                     for data_var in data_vars
                     if ("baseline" in data_var) or not ("norm" in data_var)
                 ]
+
+                # only save posterior samples if converged
                 results[n_gauss]["solutions"][solution] = {
-                    "bic": model.bic(solution=solution),
-                    "trace": model.trace[f"solution_{solution}"][data_vars].sel(
-                        draw=slice(None, None, 10)
+                    "bic": bic,
+                    "summary": summary,
+                    "converged": converged,
+                    "trace": (
+                        model.trace[f"solution_{solution}"][data_vars].sel(
+                            draw=slice(None, None, 10)
+                        )
+                        if converged
+                        else None
                     ),
-                    "summary": pm.summary(model.trace[f"solution_{solution}"]),
                 }
-                results[n_gauss]["solutions"][solution]["converged"] = (
-                    len(model.trace[f"solution_{solution}"].chain) > 1
-                ) and (
-                    results[n_gauss]["solutions"][solution]["summary"]["r_hat"].max()
-                    < 1.05
-                )
 
         result["results"] = results
         return result
