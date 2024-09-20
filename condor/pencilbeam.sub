@@ -21,8 +21,8 @@ error = /home/twenger2/tigress_hi/logs/pencilbeam/pencilbeam_$(Cluster)_$(Proces
 output = /home/twenger2/tigress_hi/logs/pencilbeam/pencilbeam_$(Cluster)_$(Process).out
 
 # Resource request
-request_cpus = 6
-request_memory = 1GB
-request_disk = 100MB
+request_cpus = 8
+request_memory = 4GB
+request_disk = 128MB
 
 queue 10
