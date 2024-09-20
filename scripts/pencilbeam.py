@@ -98,12 +98,10 @@ def main(idx):
         # save BICs and results for each model
         results = {0: {"bic": opt.best_model.null_bic()}}
         for n_gauss, model in opt.models.items():
-            results[n_gauss] = {"model": model, "bic": np.inf, "solutions": {}}
+            results[n_gauss] = {"bic": np.inf, "solutions": {}}
             for solution in model.solutions:
                 # get BIC
                 bic = model.bic(solution=solution)
-                if bic < results[n_gauss]["bic"]:
-                    results[n_gauss]["bic"] = bic
 
                 # get summary
                 summary = pm.summary(model.trace[f"solution_{solution}"])
@@ -112,6 +110,9 @@ def main(idx):
                 converged_chain = len(model.trace[f"solution_{solution}"].chain) > 1
                 converged_rhat = summary["r_hat"].max() < 1.05
                 converged = converged_chain and converged_rhat
+
+                if converged and bic < results[n_gauss]["bic"]:
+                    results[n_gauss]["bic"] = bic
 
                 # save posterior samples for un-normalized params (except baseline)
                 data_vars = list(model.trace[f"solution_{solution}"].data_vars)
