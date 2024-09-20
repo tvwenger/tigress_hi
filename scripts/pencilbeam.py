@@ -1,4 +1,3 @@
-import os
 import sys
 import pickle
 import dill
@@ -11,6 +10,7 @@ import caribou_hi
 
 from bayes_spec import SpecData, Optimize
 from caribou_hi import EmissionAbsorptionModel
+
 
 def main(idx):
     print(f"Starting job on idx = {idx}")
@@ -57,7 +57,7 @@ def main(idx):
         opt = Optimize(
             EmissionAbsorptionModel,
             data,
-            max_n_clouds=5,
+            max_n_clouds=8,
             baseline_degree=0,
             seed=1234,
             verbose=True,
@@ -81,31 +81,45 @@ def main(idx):
             "learning_rate": 1e-2,
         }
         sample_kwargs = {
-            "chains": 8,
-            "cores": 8,
+            "chains": 6,
+            "cores": 6,
             "tune": 2000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
-            "nuts_kwargs": {"target_accept": 0.9},
+            "nuts_kwargs": {"target_accept": 0.8},
         }
-        opt.optimize(bic_threshold=10.0, sample_kwargs=sample_kwargs, fit_kwargs=fit_kwargs, approx=False)
+        opt.optimize(
+            bic_threshold=10.0,
+            sample_kwargs=sample_kwargs,
+            fit_kwargs=fit_kwargs,
+            approx=False,
+        )
 
         # save BICs and results for each model
         results = {0: {"bic": opt.best_model.null_bic()}}
         for n_gauss, model in opt.models.items():
-            results[n_gauss] = {"model": model}
-            if len(model.solutions) > 1:
-                results[n_gauss]["exception"] = "multiple solutions"
-                best_bic = np.inf
-                best_solution = None
-                for solution in model.solutions:
-                    if model.bic(solution=solution) < best_bic:
-                        best_solution = solution
-                results[n_gauss]["bic"] = model.bic(solution=best_solution)
-            elif len(model.solutions) == 1:
-                results[n_gauss]["bic"] = model.bic(solution=0)
-            else:
-                results[n_gauss]["exception"] = "no solution"
+            results[n_gauss] = {"model": model, "bic": np.inf, "solutions": {}}
+            for solution in model.solutions:
+                data_vars = list(model.trace[f"solution_{solution}"].data_vars)
+                data_vars = [
+                    data_var
+                    for data_var in data_vars
+                    if ("baseline" in data_var) or not ("norm" in data_var)
+                ]
+                results[n_gauss]["solutions"][solution] = {
+                    "bic": model.bic(solution=solution),
+                    "trace": model.trace[f"solution_{solution}"][data_vars].sel(
+                        draw=slice(None, None, 10)
+                    ),
+                    "summary": pm.summary(model.trace[f"solution_{solution}"]),
+                }
+                results[n_gauss]["solutions"][solution]["converged"] = (
+                    len(model.trace[f"solution_{solution}"].chain) > 1
+                ) and (
+                    results[n_gauss]["solutions"][solution]["summary"]["r_hat"].max()
+                    < 1.05
+                )
+
         result["results"] = results
         return result
 
