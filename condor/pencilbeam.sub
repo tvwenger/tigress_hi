@@ -23,6 +23,6 @@ output = /home/twenger2/tigress_hi/logs/pencilbeam/pencilbeam_$(Cluster)_$(Proce
 # Resource request
 request_cpus = 8
 request_memory = 4GB
-request_disk = 128MB
+request_disk = 1GB
 
 queue 10
