@@ -25,4 +25,5 @@ request_cpus = 8
 request_memory = 4GB
 request_disk = 1GB
 
-queue 10
+# 81920 spectra = 80 x 1024
+queue 80*1024
