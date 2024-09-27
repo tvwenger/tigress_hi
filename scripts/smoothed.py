@@ -1,6 +1,6 @@
-import os
 import sys
 import pickle
+import dill
 
 import numpy as np
 
@@ -12,7 +12,7 @@ from bayes_spec import SpecData, Optimize
 from caribou_hi import EmissionAbsorptionFFModel
 
 
-def main(dirname, idx):
+def main(idx):
     print(f"Starting job on idx = {idx}")
     print(f"pymc version: {pm.__version__}")
     print(f"bayes_spec version: {bayes_spec.__version__}")
@@ -24,7 +24,7 @@ def main(dirname, idx):
     }
 
     # load data
-    with open(f"data/{dirname}/{idx:06d}.pkl", "rb") as f:
+    with open(f"{idx}.pkl", "rb") as f:
         datum = pickle.load(f)
 
     # get data
@@ -34,11 +34,6 @@ def main(dirname, idx):
     absorption_velocity = datum["x_values"]
     absorption_spectrum = datum["data_list"]
     rms_absorption = datum["errors"]
-
-    # skip if there does not appear to be any signal
-    if not np.any(emission_spectrum > 3.0 * rms_emission) and not np.any(absorption_spectrum > 3.0 * rms_absorption):
-        result["exception"] = "no apparent signal"
-        return result
 
     # save
     emission = SpecData(
@@ -62,7 +57,7 @@ def main(dirname, idx):
         opt = Optimize(
             EmissionAbsorptionFFModel,
             data,
-            max_n_clouds=5,
+            max_n_clouds=8,
             baseline_degree=0,
             seed=1234,
             verbose=True,
@@ -72,8 +67,8 @@ def main(dirname, idx):
             prior_log10_nHI=[1.0, 0.5],
             prior_log10_tkin=[2.0, 0.5],
             prior_log10_n_alpha=[-6.0, 0.5],
-            prior_log10_larson_linewidth=[0.2, 0.05],
-            prior_larson_power=[0.4, 0.05],
+            prior_log10_larson_linewidth=[0.2, 0.1],
+            prior_larson_power=[0.4, 0.1],
             prior_velocity=[0.0, 20.0],
             prior_rms_emission=0.1,
             prior_rms_absorption=0.01,
@@ -86,24 +81,61 @@ def main(dirname, idx):
             "learning_rate": 1e-2,
         }
         sample_kwargs = {
-            "chains": 4,
-            "cores": 4,
+            "chains": 8,
+            "cores": 8,
+            "tune": 2000,
+            "draws": 1000,
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.8},
         }
-        opt.optimize(bic_threshold=10.0, sample_kwargs=sample_kwargs, fit_kwargs=fit_kwargs, approx=False)
+        opt.optimize(
+            bic_threshold=10.0,
+            sample_kwargs=sample_kwargs,
+            fit_kwargs=fit_kwargs,
+            approx=False,
+        )
 
         # save BICs and results for each model
         results = {0: {"bic": opt.best_model.null_bic()}}
         for n_gauss, model in opt.models.items():
-            results[n_gauss] = {}
-            if len(model.solutions) > 1:
-                results[n_gauss]["exception"] = "multiple solutions"
-            elif len(model.solutions) == 1:
-                results[n_gauss]["bic"] = model.bic(solution=0)
-                results[n_gauss]["summary"] = pm.summary(model.trace.solution_0)
-            else:
-                results[n_gauss]["exception"] = "no solution"
+            results[n_gauss] = {"bic": np.inf, "solutions": {}}
+            for solution in model.solutions:
+                # get BIC
+                bic = model.bic(solution=solution)
+
+                # get summary
+                summary = pm.summary(model.trace[f"solution_{solution}"])
+
+                # check convergence
+                converged_chain = len(model.trace[f"solution_{solution}"].chain) > 1
+                converged_rhat = summary["r_hat"].max() < 1.05
+                converged = converged_chain and converged_rhat
+
+                if converged and bic < results[n_gauss]["bic"]:
+                    results[n_gauss]["bic"] = bic
+
+                # save posterior samples for un-normalized params (except baseline)
+                data_vars = list(model.trace[f"solution_{solution}"].data_vars)
+                data_vars = [
+                    data_var
+                    for data_var in data_vars
+                    if ("baseline" in data_var) or not ("norm" in data_var)
+                ]
+
+                # only save posterior samples if converged
+                results[n_gauss]["solutions"][solution] = {
+                    "bic": bic,
+                    "summary": summary,
+                    "converged": converged,
+                    "trace": (
+                        model.trace[f"solution_{solution}"][data_vars].sel(
+                            draw=slice(None, None, 10)
+                        )
+                        if converged
+                        else None
+                    ),
+                }
+
         result["results"] = results
         return result
 
@@ -113,16 +145,12 @@ def main(dirname, idx):
 
 
 if __name__ == "__main__":
-    dirname = sys.argv[1]
-    idx = int(sys.argv[2])
-    output = main(dirname, idx)
+    idx = int(sys.argv[1])
+    output = main(idx)
     if output["exception"] != "":
         print(output["exception"])
 
     # save results
-    outdirname = f"results/{dirname}_results"
-    if not os.path.isdir(outdirname):
-        os.mkdir(outdirname)
-    fname = f"{outdirname}/{idx:06d}.pkl"
+    fname = f"{idx}_smoothed.pkl"
     with open(fname, "wb") as f:
-        pickle.dump(output, f)
+        dill.dump(output, f)
