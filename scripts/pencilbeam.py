@@ -63,11 +63,11 @@ def main(idx):
             verbose=True,
         )
         opt.add_priors(
-            prior_log10_NHI=[20.0, 0.5],
-            prior_log10_nHI=[1.0, 0.5],
-            prior_log10_tkin=[2.0, 0.5],
-            prior_log10_n_alpha=[-6.0, 0.5],
-            prior_log10_larson_linewidth=[0.2, 0.1],
+            prior_log10_NHI=[20.0, 1.0],
+            prior_log10_nHI=[-1.0, 1.0],
+            prior_log10_tkin=[3.0, 0.5],
+            prior_log10_n_alpha=[-6.0, 1.0],
+            prior_log10_larson_linewidth=[0.0, 1.0],
             prior_larson_power=[0.4, 0.1],
             prior_velocity=[0.0, 20.0],
             prior_rms_emission=0.1,
