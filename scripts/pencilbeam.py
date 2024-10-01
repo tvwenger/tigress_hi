@@ -64,7 +64,7 @@ def main(idx):
         )
         opt.add_priors(
             prior_log10_NHI=[20.0, 1.0],
-            prior_log10_nHI=[-1.0, 1.0],
+            prior_log10_nHI=[0.0, 1.0],
             prior_log10_tkin=[3.0, 0.5],
             prior_log10_n_alpha=[-6.0, 1.0],
             prior_log10_larson_linewidth=[0.0, 0.2],
@@ -83,7 +83,7 @@ def main(idx):
         sample_kwargs = {
             "chains": 8,
             "cores": 8,
-            "tune": 1000,
+            "tune": 2000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.8},
