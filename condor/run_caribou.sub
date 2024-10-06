@@ -25,5 +25,5 @@ request_cpus = 8
 request_memory = 4GB
 request_disk = 1GB
 
-# 1000 spectra
-queue 1000
+# Up to 1000 spectra
+queue $(limit)

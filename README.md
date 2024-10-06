@@ -61,17 +61,17 @@ Splits joint decomposition spectra output from `radiative_transfer_ncr.ipynb` in
 Execute parallel processing of `caribou_hi` model fitting on a system with `condor`. For the three different "types" of spectra (`true`, `annulus`, and `annulus_error`) and three different values of FWHM (`1pix`, `3pix`, `10pix`), submit this file like
 
 ```bash
-condor_submit spectype=true fwhm=1pix run_caribou.sub
-condor_submit spectype=true fwhm=3pix run_caribou.sub
-condor_submit spectype=true fwhm=10pix run_caribou.sub
+condor_submit spectype=true fwhm=1pix limit=1000 run_caribou.sub
+condor_submit spectype=true fwhm=3pix limit=1000 run_caribou.sub
+condor_submit spectype=true fwhm=10pix limit=1000 run_caribou.sub
 
-condor_submit spectype=annulus fwhm=1pix run_caribou.sub
-condor_submit spectype=annulus fwhm=3pix run_caribou.sub
-condor_submit spectype=annulus fwhm=10pix run_caribou.sub
+condor_submit spectype=annulus fwhm=1pix limit=1000 run_caribou.sub
+condor_submit spectype=annulus fwhm=3pix limit=1000 run_caribou.sub
+condor_submit spectype=annulus fwhm=10pix limit=1000 run_caribou.sub
 
-condor_submit spectype=annulus_error fwhm=1pix run_caribou.sub
-condor_submit spectype=annulus_error fwhm=3pix run_caribou.sub
-condor_submit spectype=annulus_error fwhm=10pix run_caribou.sub
+condor_submit spectype=annulus_error fwhm=1pix limit=1000 run_caribou.sub
+condor_submit spectype=annulus_error fwhm=3pix limit=1000 run_caribou.sub
+condor_submit spectype=annulus_error fwhm=10pix limit=1000 run_caribou.sub
 ```
 
 ## Archived Analysis
