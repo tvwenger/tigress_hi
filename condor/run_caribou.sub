@@ -3,7 +3,7 @@
 
 # Docker container
 universe = docker
-docker_image = tvwenger/caribou_hi:v1
+docker_image = tvwenger/caribou_hi:v1.2.0
 
 # Executable
 executable = /home/twenger2/tigress_hi/scripts/run_caribou.sh

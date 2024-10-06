@@ -29,6 +29,15 @@ conda activate caribou_hi
 pip install caribou_hi
 ```
 
+## `docker`
+
+To build and push `docker` container:
+
+```bash
+docker build -t tvwenger/caribou_hi:v1.X.X .
+docker push tvwenger/caribou_hi:v1.X.X
+```
+
 ## Analysis
 
 ### `radiative_transfer_ncr.ipynb`
