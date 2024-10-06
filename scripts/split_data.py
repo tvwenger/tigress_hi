@@ -11,6 +11,10 @@ for spectype in spectypes:
         if not os.path.isdir(dirname):
             os.mkdir(dirname)
 
+        resdirname = dirname.replace("/data/", "/results/")
+        if not os.path.isdir(resdirname):
+            os.mkdir(resdirname)
+
         with open(fname, "rb") as f:
             data = pickle.load(f)
 
