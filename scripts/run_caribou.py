@@ -12,7 +12,7 @@ from bayes_spec import SpecData, Optimize
 from caribou_hi import EmissionAbsorptionModel, EmissionAbsorptionFFModel
 
 
-def main(idx, spectype):
+def main(idx, spectype, fwhm):
     print(f"pymc version: {pm.__version__}")
     print(f"bayes_spec version: {bayes_spec.__version__}")
     print(f"caribou_hi version: {caribou_hi.__version__}")
@@ -56,7 +56,7 @@ def main(idx, spectype):
         opt = Optimize(
             (
                 EmissionAbsorptionModel
-                if "true" in spectype
+                if spectype == "true" and fwhm == "1pix"
                 else EmissionAbsorptionFFModel
             ),
             data,
@@ -146,8 +146,9 @@ def main(idx, spectype):
 if __name__ == "__main__":
     idx = int(sys.argv[1])
     spectype = sys.argv[2]
+    fwhm = sys.argv[3]
 
-    output = main(idx, spectype)
+    output = main(idx, spectype, fwhm)
     if output["exception"] != "":
         print(output["exception"])
 
