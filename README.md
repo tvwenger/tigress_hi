@@ -48,10 +48,6 @@ Extracts physical conditions of neutral gas from TIGRESS-NCR simulation, generat
 
 Runs `gausspy` automated Gaussian decomposition on TIGRESS-NCR spectra.
 
-### `agd_results.ipynb`
-
-Inspect `gausspy` results.
-
 ### `scripts/split_data.py`
 
 Splits TIGRESS spectra output from `radiative_transfer_ncr.ipynb` into individual pickle files for parallel processing.
@@ -78,6 +74,10 @@ condor_submit spectype=annulus_error fwhm=10pix limit=1000 run_caribou.sub
 
 Runs `caribou_hi` on a single TIGRESS spectrum. These scripts are invoked by `condor/run_caribou.sub`.
 
+### `tigress_results.ipynb`
+
+Inspect `gausspy` and `caribou_hi` results on TIGRESS-NCR data.
+
 ## 21-SPONGE Analysis
 
 ### `scripts/split_21sponge.py`
@@ -88,4 +88,6 @@ Splits 21-SPONGE spectra output into individual pickle files for parallel proces
 
 Execute parallel processing of `caribou_hi` model fitting of 21-SPONGE data on a system with `slurm`.
 
-### `
+### `21sponge_results.ipynb`
+
+Inspect `gausspy` and `caribou_hi` results on 21-SPONGE data.
