@@ -17,6 +17,6 @@ conda activate caribou_hi
 
 # temporary pytensor compiledir
 tmpdir=`mktemp -d`
-echo "starting to analyze $idx"
+echo "starting to analyze $SLURM_ARRAY_TASK_ID"
 PYTENSOR_FLAGS="base_compiledir=$tmpdir" python scripts/run_21sponge.py $SLURM_ARRAY_TASK_ID
 rm -rf $tmpdir

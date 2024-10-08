@@ -27,12 +27,15 @@ for source in data.keys():
     em_mom1 = np.average(data[source]["v_em"], weights=em_weights)
     em_mom2 = np.average((data[source]["v_em"] - em_mom1) ** 2.0, weights=em_weights)
 
+    # keep only non-nan absorption channels
+    nan_abs = np.isnan(data[source]["emtau"])
+
     # save
-    joint_data["data_list"].append(1.0 - data[source]["emtau"])
+    joint_data["data_list"].append(1.0 - data[source]["emtau"][~nan_abs])
     joint_data["data_list_em"].append(data[source]["Tb"])
-    joint_data["x_values"].append(data[source]["v_abs"])
+    joint_data["x_values"].append(data[source]["v_abs"][~nan_abs])
     joint_data["x_values_em"].append(data[source]["v_em"])
-    joint_data["errors"].append(data[source]["e_emtau"])
+    joint_data["errors"].append(data[source]["e_emtau"][~nan_abs])
     joint_data["errors_em"].append(data[source]["e_Tb"])
     joint_data["source"].append(source)
     joint_data["em_mom1"].append(em_mom1)
