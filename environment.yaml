@@ -9,4 +9,4 @@ dependencies:
   - pytensor
   - dill
   - pip:
-    - caribou_hi
+    - caribou_hi>=1.2.0

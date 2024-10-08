@@ -13,7 +13,6 @@ from caribou_hi import EmissionAbsorptionFFModel
 
 
 def main(idx):
-    print(f"Starting job on idx = {idx}")
     print(f"pymc version: {pm.__version__}")
     print(f"bayes_spec version: {bayes_spec.__version__}")
     print(f"caribou_hi version: {caribou_hi.__version__}")
@@ -24,7 +23,7 @@ def main(idx):
     }
 
     # load data
-    with open(f"{idx}.pkl", "rb") as f:
+    with open(f"bighicat/21sponge/{idx}.pkl", "rb") as f:
         datum = pickle.load(f)
 
     # get data
@@ -48,7 +47,7 @@ def main(idx):
         absorption_spectrum,
         rms_absorption,
         xlabel=r"$V_{\rm LSR}$ (km s$^{-1}$)",
-        ylabel=r"$\tau$",
+        ylabel=r"$1-\exp(-\tau)$",
     )
     data = {"emission": emission, "absorption": absorption}
 
@@ -63,21 +62,19 @@ def main(idx):
             verbose=True,
         )
         opt.add_priors(
-            prior_log10_NHI=[20.0, 0.5],
-            prior_log10_nHI=[1.0, 0.5],
-            prior_log10_tkin=[2.0, 0.5],
-            prior_log10_n_alpha=[-6.0, 0.5],
+            prior_log10_NHI=[20.0, 1.0],
+            prior_log10_depth=[1.0, 1.0],
+            prior_log10_pressure=[3.0, 1.0],
+            prior_velocity=[datum["em_mom1"], 20.0],
+            prior_log10_n_alpha=[-6.0, 1.0],
             prior_log10_larson_linewidth=[0.2, 0.1],
             prior_larson_power=[0.4, 0.1],
-            prior_velocity=[0.0, 20.0],
-            prior_rms_emission=0.1,
-            prior_rms_absorption=0.01,
             ordered=False,
         )
         opt.add_likelihood()
         fit_kwargs = {
             "rel_tolerance": 0.01,
-            "abs_tolerance": 0.1,
+            "abs_tolerance": 0.05,
             "learning_rate": 1e-2,
         }
         sample_kwargs = {
@@ -107,20 +104,14 @@ def main(idx):
                 summary = pm.summary(model.trace[f"solution_{solution}"])
 
                 # check convergence
-                converged_chain = len(model.trace[f"solution_{solution}"].chain) > 1
-                converged_rhat = summary["r_hat"].max() < 1.05
-                converged = converged_chain and converged_rhat
+                converged = summary["r_hat"].max() < 1.05
 
                 if converged and bic < results[n_gauss]["bic"]:
                     results[n_gauss]["bic"] = bic
 
                 # save posterior samples for un-normalized params (except baseline)
                 data_vars = list(model.trace[f"solution_{solution}"].data_vars)
-                data_vars = [
-                    data_var
-                    for data_var in data_vars
-                    if ("baseline" in data_var) or not ("norm" in data_var)
-                ]
+                data_vars = [data_var for data_var in data_vars if ("baseline" in data_var) or not ("norm" in data_var)]
 
                 # only save posterior samples if converged
                 results[n_gauss]["solutions"][solution] = {
@@ -128,9 +119,7 @@ def main(idx):
                     "summary": summary,
                     "converged": converged,
                     "trace": (
-                        model.trace[f"solution_{solution}"][data_vars].sel(
-                            draw=slice(None, None, 10)
-                        )
+                        model.trace[f"solution_{solution}"][data_vars].sel(draw=slice(None, None, 10))
                         if converged
                         else None
                     ),
@@ -146,11 +135,12 @@ def main(idx):
 
 if __name__ == "__main__":
     idx = int(sys.argv[1])
+
     output = main(idx)
     if output["exception"] != "":
         print(output["exception"])
 
     # save results
-    fname = f"{idx}_smoothed.pkl"
+    fname = f"results/21sponge/{idx}_caribou_hi.pkl"
     with open(fname, "wb") as f:
         dill.dump(output, f)
