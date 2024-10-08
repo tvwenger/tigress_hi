@@ -44,7 +44,7 @@ docker push tvwenger/caribou_hi:v1.X.X
 
 Extracts physical conditions of neutral gas from TIGRESS-NCR simulation, generates FITS cubes, performs radiative transfer, and generates synthetic 21-cm data cubes.
 
-### `agd.ipynb`
+### `agd_tigress.ipynb`
 
 Runs `gausspy` automated Gaussian decomposition on TIGRESS-NCR spectra.
 
