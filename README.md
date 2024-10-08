@@ -1,5 +1,5 @@
 # tigress_hi
-Decomposing synthetic 21-cm spectra from TIGRESS
+Decomposing synthetic 21-cm spectra from TIGRESS and 21-SPONGE
 
 ## Installation
 
@@ -38,7 +38,7 @@ docker build -t tvwenger/caribou_hi:v1.X.X .
 docker push tvwenger/caribou_hi:v1.X.X
 ```
 
-## Analysis
+## TIGRESS-HI Analysis
 
 ### `radiative_transfer_ncr.ipynb`
 
@@ -54,11 +54,11 @@ Inspect `gausspy` results.
 
 ### `scripts/split_data.py`
 
-Splits joint decomposition spectra output from `radiative_transfer_ncr.ipynb` into individual pickle files for parallel processing.
+Splits TIGRESS spectra output from `radiative_transfer_ncr.ipynb` into individual pickle files for parallel processing.
 
 ### `condor/run_caribou.sub`
 
-Execute parallel processing of `caribou_hi` model fitting on a system with `condor`. For the three different "types" of spectra (`true`, `annulus`, and `annulus_error`) and three different values of FWHM (`1pix`, `3pix`, `10pix`), submit this file like
+Execute parallel processing of `caribou_hi` model fitting of TIGRESS data on a system with `condor`. For the three different "types" of spectra (`true`, `annulus`, and `annulus_error`) and three different values of FWHM (`1pix`, `3pix`, `10pix`), submit this file like
 
 ```bash
 condor_submit spectype=true fwhm=1pix limit=1000 run_caribou.sub
@@ -74,24 +74,18 @@ condor_submit spectype=annulus_error fwhm=3pix limit=1000 run_caribou.sub
 condor_submit spectype=annulus_error fwhm=10pix limit=1000 run_caribou.sub
 ```
 
-## Archived Analysis
+### `scripts/run_caribou.sh` and `scripts/run_caribou.py`
 
-### `radiative_transfer.ipynb`
+Runs `caribou_hi` on a single TIGRESS spectrum. These scripts are invoked by `condor/run_caribou.sub`.
 
-Extracts physical conditions of neutral gas from TIGRESS simulation, generates FITS cubes, performs radiative transfer, and generates synthetic 21-cm data cubes.
+## 21-SPONGE Analysis
 
-### `scripts/run_pencilbeam.py`
+### `scripts/split_21sponge.py`
 
-Optimizes `caribou_hi` model on single extracted "pencilbeam" spectrum.
+Splits 21-SPONGE spectra output into individual pickle files for parallel processing.
 
-### `scripts/run_smoothed.py`
+### `slurm/run_caribou.sub`
 
-Optimizes`caribou_hi` model on single extracted "smoothed" spectrum.
+Execute parallel processing of `caribou_hi` model fitting of 21-SPONGE data on a system with `slurm`.
 
-### `slurm/submit_pencilbeam.sh`
-
-Runs `run_pencilbeam.py` on all "pencilbeam" spectra via SLURM.
-
-### `slurm/submit_smoothed.sh`
-
-Runs `run_smoothed.py` on all "smoothed" spectra via SLURM.
+### `

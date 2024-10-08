@@ -41,6 +41,9 @@ for source in data.keys():
     joint_data["em_mom1"].append(em_mom1)
     joint_data["em_mom2"].append(em_mom2)
 
+with open("bighicat/21-SPONGE_spectra.pkl", "wb") as f:
+    pickle.dump(joint_data, f)
+
 for idx in range(len(joint_data["data_list"])):
     datum = {}
     for key in joint_data.keys():
