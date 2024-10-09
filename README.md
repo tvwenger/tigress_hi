@@ -6,9 +6,11 @@ Decomposing synthetic 21-cm spectra from TIGRESS and 21-SPONGE
 To run the radiative transfer notebooks:
 
 ```bash
-conda create --name astro-tigress -c conda-forge python pip ipython jupyter
-conda activate astro-tigress
-pip install https://github.com/tvwenger/astro-tigress/archive/installation.zip
+git clone git://github.com/tvwenger/pyathena.git
+cd pyathena
+conda env create -f env.yml
+conda activate pyathena
+pip install .
 ```
 
 To run the automated gaussian decomposition (`gausspy`) notebooks:
