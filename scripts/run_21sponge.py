@@ -56,7 +56,7 @@ def main(idx):
         opt = Optimize(
             EmissionAbsorptionFFModel,
             data,
-            max_n_clouds=8,
+            max_n_clouds=20,
             baseline_degree=0,
             seed=1234,
             verbose=True,
@@ -65,7 +65,7 @@ def main(idx):
             prior_log10_NHI=[20.0, 1.0],
             prior_log10_depth=[1.0, 1.0],
             prior_log10_pressure=[3.0, 1.0],
-            prior_velocity=[datum["em_mom1"], 20.0],
+            prior_velocity=[0.0, 15.0],
             prior_log10_n_alpha=[-6.0, 1.0],
             prior_log10_larson_linewidth=[0.2, 0.1],
             prior_larson_power=[0.4, 0.1],
@@ -111,7 +111,11 @@ def main(idx):
 
                 # save posterior samples for un-normalized params (except baseline)
                 data_vars = list(model.trace[f"solution_{solution}"].data_vars)
-                data_vars = [data_var for data_var in data_vars if ("baseline" in data_var) or not ("norm" in data_var)]
+                data_vars = [
+                    data_var
+                    for data_var in data_vars
+                    if ("baseline" in data_var) or not ("norm" in data_var)
+                ]
 
                 # only save posterior samples if converged
                 results[n_gauss]["solutions"][solution] = {
@@ -119,7 +123,9 @@ def main(idx):
                     "summary": summary,
                     "converged": converged,
                     "trace": (
-                        model.trace[f"solution_{solution}"][data_vars].sel(draw=slice(None, None, 10))
+                        model.trace[f"solution_{solution}"][data_vars].sel(
+                            draw=slice(None, None, 10)
+                        )
                         if converged
                         else None
                     ),
