@@ -63,13 +63,13 @@ condor_submit spectype=true fwhm=1pix limit=1000 run_caribou.sub
 condor_submit spectype=true fwhm=3pix limit=1000 run_caribou.sub
 condor_submit spectype=true fwhm=10pix limit=1000 run_caribou.sub
 
-condor_submit spectype=annulus fwhm=1pix limit=1000 run_caribou.sub
-condor_submit spectype=annulus fwhm=3pix limit=1000 run_caribou.sub
-condor_submit spectype=annulus fwhm=10pix limit=1000 run_caribou.sub
+condor_submit spectype=mismatched fwhm=1pix limit=1000 run_caribou.sub
+condor_submit spectype=mismatched fwhm=3pix limit=1000 run_caribou.sub
+condor_submit spectype=mismatched fwhm=10pix limit=1000 run_caribou.sub
 
-condor_submit spectype=annulus_error fwhm=1pix limit=1000 run_caribou.sub
-condor_submit spectype=annulus_error fwhm=3pix limit=1000 run_caribou.sub
-condor_submit spectype=annulus_error fwhm=10pix limit=1000 run_caribou.sub
+condor_submit spectype=matched fwhm=1pix limit=1000 run_caribou.sub
+condor_submit spectype=matched fwhm=3pix limit=1000 run_caribou.sub
+condor_submit spectype=matched fwhm=10pix limit=1000 run_caribou.sub
 ```
 
 ### `scripts/run_caribou.sh` and `scripts/run_caribou.py`
