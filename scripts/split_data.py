@@ -1,7 +1,7 @@
 import os
 import pickle
 
-spectypes = ["true", "annulus", "annulus_error"]
+spectypes = ["true", "mismatched", "matched"]
 fwhms = ["1pix", "3pix", "10pix"]
 
 for spectype in spectypes:
