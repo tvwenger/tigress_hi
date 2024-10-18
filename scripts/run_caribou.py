@@ -51,10 +51,11 @@ def main(idx, spectype, fwhm):
     )
     data = {"emission": emission, "absorption": absorption}
 
-    model = EmissionAbsorptionModel
-    if spectype == "matched" or (spectype == "true" and fwhm != "1pix"):
-        model = EmissionAbsorptionMatchedModel
-    elif spectype == "mismatched":
+    model = EmissionAbsorptionMismatchedModel
+    # only mismatched fwhm = 1 has pencilbeam emission and absorption
+    if spectype == "mismatched" and fwhm == "1pix":
+        model = EmissionAbsorptionModel
+    else:
         model = EmissionAbsorptionMismatchedModel
 
     try:

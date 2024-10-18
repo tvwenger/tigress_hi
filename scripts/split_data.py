@@ -1,7 +1,7 @@
 import os
 import pickle
 
-spectypes = ["true", "mismatched", "matched"]
+spectypes = ["mismatched", "matched"]
 fwhms = ["1pix", "3pix", "10pix"]
 
 for spectype in spectypes:

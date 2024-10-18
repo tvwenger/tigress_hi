@@ -56,13 +56,9 @@ Splits TIGRESS spectra output from `radiative_transfer_ncr.ipynb` into individua
 
 ### `condor/run_caribou.sub`
 
-Execute parallel processing of `caribou_hi` model fitting of TIGRESS data on a system with `condor`. For the three different "types" of spectra (`true`, `annulus`, and `annulus_error`) and three different values of FWHM (`1pix`, `3pix`, `10pix`), submit this file like
+Execute parallel processing of `caribou_hi` model fitting of TIGRESS data on a system with `condor`. For the two different "types" of spectra (`matched`, `mismatched`) and three different values of FWHM (`1pix`, `3pix`, `10pix`), submit this file like
 
 ```bash
-condor_submit spectype=true fwhm=1pix limit=1000 run_caribou.sub
-condor_submit spectype=true fwhm=3pix limit=1000 run_caribou.sub
-condor_submit spectype=true fwhm=10pix limit=1000 run_caribou.sub
-
 condor_submit spectype=mismatched fwhm=1pix limit=1000 run_caribou.sub
 condor_submit spectype=mismatched fwhm=3pix limit=1000 run_caribou.sub
 condor_submit spectype=mismatched fwhm=10pix limit=1000 run_caribou.sub
