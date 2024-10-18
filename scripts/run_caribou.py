@@ -55,8 +55,6 @@ def main(idx, spectype, fwhm):
     # only mismatched fwhm = 1 has pencilbeam emission and absorption
     if spectype == "mismatched" and fwhm == "1pix":
         model = EmissionAbsorptionModel
-    else:
-        model = EmissionAbsorptionMismatchedModel
 
     try:
         # Initialize optimizer
