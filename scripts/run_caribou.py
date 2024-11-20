@@ -9,7 +9,11 @@ import bayes_spec
 import caribou_hi
 
 from bayes_spec import SpecData, Optimize
-from caribou_hi import EmissionAbsorptionModel, EmissionAbsorptionMatchedModel, EmissionAbsorptionMismatchedModel
+from caribou_hi import (
+    EmissionAbsorptionModel,
+    EmissionAbsorptionMatchedModel,
+    EmissionAbsorptionMismatchedModel,
+)
 
 
 def main(idx, spectype, fwhm):
@@ -116,7 +120,11 @@ def main(idx, spectype, fwhm):
 
                 # save posterior samples for un-normalized params (except baseline)
                 data_vars = list(model.trace[f"solution_{solution}"].data_vars)
-                data_vars = [data_var for data_var in data_vars if ("baseline" in data_var) or not ("norm" in data_var)]
+                data_vars = [
+                    data_var
+                    for data_var in data_vars
+                    if ("baseline" in data_var) or not ("norm" in data_var)
+                ]
 
                 # only save posterior samples if converged
                 results[n_gauss]["solutions"][solution] = {
@@ -124,7 +132,9 @@ def main(idx, spectype, fwhm):
                     "summary": summary,
                     "converged": converged,
                     "trace": (
-                        model.trace[f"solution_{solution}"][data_vars].sel(draw=slice(None, None, 10))
+                        model.trace[f"solution_{solution}"][data_vars].sel(
+                            draw=slice(None, None, 10)
+                        )
                         if converged
                         else None
                     ),
