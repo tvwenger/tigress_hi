@@ -8,19 +8,19 @@ requirements = (HasCHTCStaging == true)
 container_image = file:///staging/twenger2/caribou_hi-2.0.0.sif
 
 # Executable
-executable = /home/twenger2/tigress_hi/scripts/run_caribou.sh
+executable = $(dir)/scripts/run_caribou.sh
 arguments = $(Process) $(spectype) $(fwhm)
 
 # Data handling
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = /home/twenger2/tigress_hi/scripts/run_caribou.py, /home/twenger2/tigress_hi/data/HI_$(spectype)_spectra_$(fwhm)/$(Process).pkl
-transfer_output_remaps = "$(Process)_caribou_hi.pkl = /home/twenger2/tigress_hi/results/HI_$(spectype)_spectra_$(fwhm)/$(Process)_caribou_hi.pkl"
+transfer_input_files = $(dir)/scripts/run_caribou.py, $(dir)/data/HI_$(spectype)_spectra_$(fwhm)/$(Process).pkl
+transfer_output_remaps = "$(Process)_caribou_hi.pkl = $(dir)/results/HI_$(spectype)_spectra_$(fwhm)/$(Process)_caribou_hi.pkl"
 
 # Logging
-log = /home/twenger2/tigress_hi/logs/caribou_hi_$(Cluster)_$(Process).log
-error = /home/twenger2/tigress_hi/logs/caribou_hi_$(Cluster)_$(Process).err
-output = /home/twenger2/tigress_hi/logs/caribou_hi_$(Cluster)_$(Process).out
+log = $(dir)/logs/caribou_hi_$(Cluster)_$(Process).log
+error = $(dir)/logs/caribou_hi_$(Cluster)_$(Process).err
+output = $(dir)/logs/caribou_hi_$(Cluster)_$(Process).out
 stream_error = True
 stream_output = True
 
