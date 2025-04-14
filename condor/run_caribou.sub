@@ -1,9 +1,11 @@
 # HTC Submit File
 # TIGRESS-HI caribou_hi analysis
 
-# Docker container
-universe = docker
-docker_image = tvwenger/caribou_hi:v1.3.0
+dir = /home/twenger2/tigress_hi
+
+# Container
+requirements = (HasCHTCStaging == true)
+container_image = file:///staging/twenger2/caribou_hi-2.0.0.sif
 
 # Executable
 executable = /home/twenger2/tigress_hi/scripts/run_caribou.sh
@@ -19,11 +21,13 @@ transfer_output_remaps = "$(Process)_caribou_hi.pkl = /home/twenger2/tigress_hi/
 log = /home/twenger2/tigress_hi/logs/caribou_hi_$(Cluster)_$(Process).log
 error = /home/twenger2/tigress_hi/logs/caribou_hi_$(Cluster)_$(Process).err
 output = /home/twenger2/tigress_hi/logs/caribou_hi_$(Cluster)_$(Process).out
+stream_error = True
+stream_output = True
 
 # Resource request
 request_cpus = 8
-request_memory = 4GB
-request_disk = 1GB
+request_memory = 16GB
+request_disk = 64GB
 
 # Up to 1000 spectra
 queue $(limit)

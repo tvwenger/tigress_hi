@@ -9,11 +9,7 @@ import bayes_spec
 import caribou_hi
 
 from bayes_spec import SpecData, Optimize
-from caribou_hi import (
-    EmissionAbsorptionModel,
-    EmissionAbsorptionMatchedModel,
-    EmissionAbsorptionMismatchedModel,
-)
+from caribou_hi import EmissionAbsorptionModel
 
 
 def main(idx, spectype, fwhm):
@@ -55,15 +51,10 @@ def main(idx, spectype, fwhm):
     )
     data = {"emission": emission, "absorption": absorption}
 
-    model = EmissionAbsorptionMismatchedModel
-    # only mismatched fwhm = 1 has pencilbeam emission and absorption
-    if spectype == "mismatched" and fwhm == "1pix":
-        model = EmissionAbsorptionModel
-
     try:
         # Initialize optimizer
         opt = Optimize(
-            model,
+            EmissionAbsorptionModel,
             data,
             max_n_clouds=8,
             baseline_degree=0,
@@ -76,20 +67,23 @@ def main(idx, spectype, fwhm):
             prior_log10_pressure=[3.0, 1.0],
             prior_velocity=[0.0, 20.0],
             prior_log10_n_alpha=[-6.0, 1.0],
-            prior_log10_larson_linewidth=[0.2, 0.1],
-            prior_larson_power=[0.4, 0.1],
+            prior_log10_nth_fwhm_1pc=[0.2, 0.1],
+            prior_depth_nth_fwhm_power=[0.3, 0.1],
+            prior_fwhm_L=None,
+            prior_baseline_coeffs=None,
             ordered=False,
+            hyper_depth_linewidth=False,
         )
         opt.add_likelihood()
         fit_kwargs = {
-            "rel_tolerance": 0.01,
+            "rel_tolerance": 0.05,
             "abs_tolerance": 0.05,
-            "learning_rate": 1e-2,
+            "learning_rate": 0.01,
         }
         sample_kwargs = {
             "chains": 8,
             "cores": 8,
-            "tune": 2000,
+            "tune": 1000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.8},
@@ -105,6 +99,8 @@ def main(idx, spectype, fwhm):
         results = {0: {"bic": opt.best_model.null_bic()}}
         for n_gauss, model in opt.models.items():
             results[n_gauss] = {"bic": np.inf, "solutions": {}}
+            if model.solutions is None:
+                continue
             for solution in model.solutions:
                 # get BIC
                 bic = model.bic(solution=solution)
@@ -118,13 +114,8 @@ def main(idx, spectype, fwhm):
                 if converged and bic < results[n_gauss]["bic"]:
                     results[n_gauss]["bic"] = bic
 
-                # save posterior samples for un-normalized params (except baseline)
+                # save posterior samples
                 data_vars = list(model.trace[f"solution_{solution}"].data_vars)
-                data_vars = [
-                    data_var
-                    for data_var in data_vars
-                    if ("baseline" in data_var) or not ("norm" in data_var)
-                ]
 
                 # only save posterior samples if converged
                 results[n_gauss]["solutions"][solution] = {
