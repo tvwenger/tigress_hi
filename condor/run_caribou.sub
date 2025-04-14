@@ -26,8 +26,8 @@ stream_output = True
 
 # Resource request
 request_cpus = 8
-request_memory = 16GB
-request_disk = 64GB
+request_memory = 2GB
+request_disk = 4GB
 
 # Up to 1000 spectra
 queue $(limit)
