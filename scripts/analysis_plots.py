@@ -58,21 +58,34 @@ class Histogram:
                 raise ValueError(f"{source} not supported")
         return self.ax, legend, None, None
 
-    def parameter(self, param="All_log10_NHI", bins=None):
+    def parameter(
+        self,
+        param="All_log10_NHI",
+        bins=None,
+        xlim=None,
+        ylim=None,
+        sightline=False,
+    ):
         for results, source in zip(self.results, self.sources):
             if source == "caribou_hi":
+                if sightline:
+                    data = np.array([result["median"][param] for result in results.values()])
+                else:
+                    data = np.concatenate([result["median"][param] for result in results.values()])
                 self.ax.hist(
-                    np.concatenate(
-                        [result["median"][param] for result in results.values()]
-                    ),
+                    data,
                     bins=bins,
                     color="gray",
                     edgecolor="k",
                 )
 
             elif source in ["tigress", "gausspy"]:
+                if sightline:
+                    data = np.array([result[param] for result in results.values()])
+                else:
+                    data = np.concatenate([result[param] for result in results.values()])
                 self.ax.hist(
-                    np.concatenate([result[param] for result in results.values()]),
+                    data,
                     bins=bins,
                     color="gray",
                     edgecolor="k",
