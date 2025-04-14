@@ -1,6 +1,5 @@
 import sys
 import pickle
-import dill
 
 import numpy as np
 
@@ -151,4 +150,4 @@ if __name__ == "__main__":
     # save results
     fname = f"{idx}_caribou_hi.pkl"
     with open(fname, "wb") as f:
-        dill.dump(output, f)
+        pickle.dump(output, f)
