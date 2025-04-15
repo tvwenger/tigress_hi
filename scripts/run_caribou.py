@@ -63,11 +63,11 @@ def main(idx, spectype, fwhm):
         opt.add_priors(
             prior_log10_NHI=[20.0, 1.0],
             prior_log10_depth=[1.0, 1.0],
-            prior_log10_pressure=[3.0, 1.0],
+            prior_log10_pressure=[3.5, 1.5],
             prior_velocity=[0.0, 20.0],
             prior_log10_n_alpha=[-6.0, 1.0],
-            prior_log10_nth_fwhm_1pc=[0.2, 0.1],
-            prior_depth_nth_fwhm_power=[0.3, 0.1],
+            prior_log10_nth_fwhm_1pc=[0.3, 0.2],
+            prior_depth_nth_fwhm_power=[0.4, 0.2],
             prior_fwhm_L=None,
             prior_baseline_coeffs=None,
             ordered=False,
@@ -80,8 +80,8 @@ def main(idx, spectype, fwhm):
             "learning_rate": 0.01,
         }
         sample_kwargs = {
-            "chains": 8,
-            "cores": 8,
+            "chains": 12,
+            "cores": 12,
             "tune": 2000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
