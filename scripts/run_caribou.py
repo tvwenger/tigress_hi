@@ -82,7 +82,7 @@ def main(idx, spectype, fwhm):
         sample_kwargs = {
             "chains": 8,
             "cores": 8,
-            "tune": 1000,
+            "tune": 2000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.8},
