@@ -8,10 +8,10 @@ import bayes_spec
 import caribou_hi
 
 from bayes_spec import SpecData, Optimize
-from caribou_hi import EmissionAbsorptionModel
+from caribou_hi import EmissionAbsorptionPhysicalModel
 
 
-def main(idx, spectype, fwhm):
+def main(idx):
     print(f"pymc version: {pm.__version__}")
     print(f"bayes_spec version: {bayes_spec.__version__}")
     print(f"caribou_hi version: {caribou_hi.__version__}")
@@ -53,25 +53,25 @@ def main(idx, spectype, fwhm):
     try:
         # Initialize optimizer
         opt = Optimize(
-            EmissionAbsorptionModel,
+            EmissionAbsorptionPhysicalModel,
             data,
             max_n_clouds=8,
             baseline_degree=0,
+            depth_nth_fwhm_power=1 / 3,
+            bg_temp=3.77,
             seed=1234,
             verbose=True,
         )
         opt.add_priors(
-            prior_log10_NHI=[20.0, 1.0],
-            prior_log10_depth=[1.0, 1.0],
-            prior_log10_pressure=[3.5, 1.5],
-            prior_velocity=[0.0, 20.0],
-            prior_log10_n_alpha=[-6.0, 1.0],
-            prior_log10_nth_fwhm_1pc=[0.3, 0.2],
-            prior_depth_nth_fwhm_power=[0.4, 0.2],
+            prior_sigma_log10_NHI=0.5,
+            prior_ff_NHI=1.0e21,
+            prior_fwhm2=500.0,
+            prior_fwhm2_thermal_fraction=[2.0, 2.0],
+            prior_velocity=[0.0, 10.0],
+            prior_log10_n_alpha=[-6.0, 2.0],
+            prior_nth_fwhm_1pc=[1.75, 0.25],
             prior_fwhm_L=None,
             prior_baseline_coeffs=None,
-            ordered=False,
-            hyper_depth_linewidth=False,
         )
         opt.add_likelihood()
         fit_kwargs = {
@@ -80,9 +80,9 @@ def main(idx, spectype, fwhm):
             "learning_rate": 0.01,
         }
         sample_kwargs = {
-            "chains": 12,
-            "cores": 12,
-            "tune": 2000,
+            "chains": 8,
+            "cores": 8,
+            "tune": 1000,
             "draws": 1000,
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.8},
@@ -121,13 +121,7 @@ def main(idx, spectype, fwhm):
                     "bic": bic,
                     "summary": summary,
                     "converged": converged,
-                    "trace": (
-                        model.trace[f"solution_{solution}"][data_vars].sel(
-                            draw=slice(None, None, 10)
-                        )
-                        if converged
-                        else None
-                    ),
+                    "trace": model.trace[f"solution_{solution}"][data_vars],
                 }
 
         result["results"] = results
