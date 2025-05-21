@@ -134,10 +134,8 @@ def main(idx):
 
 if __name__ == "__main__":
     idx = int(sys.argv[1])
-    spectype = sys.argv[2]
-    fwhm = sys.argv[3]
 
-    output = main(idx, spectype, fwhm)
+    output = main(idx)
     if output["exception"] != "":
         print(output["exception"])
 
