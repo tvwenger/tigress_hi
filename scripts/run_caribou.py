@@ -24,7 +24,6 @@ def fit_model(idx, data):
             data,
             max_n_clouds=8,
             baseline_degree=0,
-            depth_nth_fwhm_power=1 / 3,
             bg_temp=3.77,
             seed=1234,
             verbose=True,
