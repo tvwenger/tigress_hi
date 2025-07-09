@@ -54,10 +54,17 @@ def fit_model(idx, data):
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.9},
         }
+        solve_kwargs = {
+            "init_params": "random_from_data",
+            "n_init": 10,
+            "max_iter": 1_000,
+            "kl_div_threshold": 0.1,
+        }
         opt.optimize(
             bic_threshold=10.0,
             sample_kwargs=sample_kwargs,
             fit_kwargs=fit_kwargs,
+            solve_kwargs=solve_kwargs,
             approx=False,
             start_spread={"velocity_norm": [0.25, 0.75]},
         )
@@ -144,10 +151,17 @@ def fit_physical_model(idx, data):
             "init_kwargs": fit_kwargs,
             "nuts_kwargs": {"target_accept": 0.9},
         }
+        solve_kwargs = {
+            "init_params": "random_from_data",
+            "n_init": 10,
+            "max_iter": 1_000,
+            "kl_div_threshold": 0.1,
+        }
         opt.optimize(
             bic_threshold=10.0,
             sample_kwargs=sample_kwargs,
             fit_kwargs=fit_kwargs,
+            solve_kwargs=solve_kwargs,
             approx=False,
             start_spread={"velocity_norm": [0.25, 0.75]},
         )
