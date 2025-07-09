@@ -5,7 +5,7 @@ dir = /home/twenger2/tigress_hi
 
 # Container
 requirements = (HasCHTCStaging == true)
-container_image = file:///staging/twenger2/caribou_hi-3.0.0.sif
+container_image = file:///staging/twenger2/caribou_hi-4.1.0.sif
 
 # Executable
 executable = $(dir)/scripts/run_caribou.sh
@@ -15,7 +15,7 @@ arguments = $(Process) $(spectype) $(fwhm)
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 transfer_input_files = $(dir)/scripts/run_caribou.py, $(dir)/data/HI_$(spectype)_spectra_$(fwhm)/$(Process).pkl
-transfer_output_remaps = "$(Process)_caribou_hi.pkl = $(dir)/results/HI_$(spectype)_spectra_$(fwhm)/$(Process)_caribou_hi.pkl"
+transfer_output_remaps = "$(Process)_em_abs.pkl = $(dir)/results/HI_$(spectype)_spectra_$(fwhm)/$(Process)_em_abs.pkl ; "$(Process)_em_abs_physical.pkl = $(dir)/results/HI_$(spectype)_spectra_$(fwhm)/$(Process)_em_abs_physical.pkl""
 
 # Logging
 log = $(dir)/logs/caribou_hi_$(Cluster)_$(Process).log
